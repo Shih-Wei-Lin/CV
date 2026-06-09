@@ -1,0 +1,39 @@
+name: Compile LaTeX and Create Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tex'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: Shihwei_Lin_CV.tex
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
+          body: |
+            Automated CV build from commit ${{ github.sha }}.
+            
+            Commit Message:
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+          files: Shihwei_Lin_CV.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
