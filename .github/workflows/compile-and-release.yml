@@ -7,11 +7,23 @@ on:
     paths:
       - '**.tex'
 
+# 這裡新增了 pages 和 id-token 的寫入權限
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+# 避免多個 Pages 部署任務衝突
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-release:
+    # 指定部署環境
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,3 +49,25 @@ jobs:
           files: Shihwei_Lin_CV.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # === 以下為新增的部署 GitHub Pages 步驟 ===
+
+      - name: Prepare Files for GitHub Pages
+        run: |
+          mkdir -p public
+          # 將編譯好的 PDF 複製到 public 資料夾下
+          cp Shihwei_Lin_CV.pdf public/Shihwei_Lin_CV.pdf
+          # 建立自動導向的 HTML，這樣開啟首頁網址時會自動跳轉到 PDF
+          echo '<meta http-equiv="refresh" content="0; url=./Shihwei_Lin_CV.pdf">' > public/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
