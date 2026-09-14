@@ -55,10 +55,10 @@ jobs:
       - name: Prepare Files for GitHub Pages
         run: |
           mkdir -p public
-          # 將編譯好的 PDF 複製到 public 資料夾下
+          # 將編譯好的 PDF 複製到 public 資料夾下，供頁面內的下載按鈕使用
           cp Shihwei_Lin_CV.pdf public/Shihwei_Lin_CV.pdf
-          # 建立自動導向的 HTML，這樣開啟首頁網址時會自動跳轉到 PDF
-          echo '<meta http-equiv="refresh" content="0; url=./Shihwei_Lin_CV.pdf">' > public/index.html
+          # 使用 repo 內維護的 index.html 作為 CV 展示頁面
+          cp index.html public/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
