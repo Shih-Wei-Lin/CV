@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - '**.tex'
-      - 'index.html'
+      - 'scripts/**'
+      - 'templates/**'
       - '.github/workflows/compile-and-release.yml'
   workflow_dispatch:
 
@@ -31,6 +32,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
@@ -60,8 +66,8 @@ jobs:
           mkdir -p public
           # 將編譯好的 PDF 複製到 public 資料夾下，供頁面內的下載按鈕使用
           cp Shihwei_Lin_CV.pdf public/Shihwei_Lin_CV.pdf
-          # 使用 repo 內維護的 index.html 作為 CV 展示頁面
-          cp index.html public/index.html
+          # 從 .tex 內容自動產生展示頁面，確保網頁與履歷內容同步
+          python scripts/generate_page.py Shihwei_Lin_CV.tex templates/cv_template.html public/index.html Shihwei_Lin_CV.pdf
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
