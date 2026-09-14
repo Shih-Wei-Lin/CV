@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - '**.tex'
+      - 'index.html'
+      - '.github/workflows/compile-and-release.yml'
+  workflow_dispatch:
 
 # 這裡新增了 pages 和 id-token 的寫入權限
 permissions:
